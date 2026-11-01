@@ -289,15 +289,15 @@ Pi 的包和模型目录更新互不影响。`pi update` 只更新 Pi 本身，�
 
 ## 2.7 卸载
 
-npm 安装：
+1. 安装脚本：重新运行安装脚本并选择 **Uninstall Pi**。
+
+2. npm 安装：
 
 ```bash
 npm uninstall -g @earendil-works/pi-coding-agent
 ```
 
-安装脚本：重新运行安装脚本并选择 **Uninstall Pi**。
-
-Nix：
+3. Nix：
 
 ```bash
 nix profile remove pi
