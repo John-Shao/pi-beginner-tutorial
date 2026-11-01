@@ -57,13 +57,14 @@ npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 
 npm 方式不会固定间接依赖，升级时可能出现依赖漂移。`--ignore-scripts` 是有意的：Pi 的正常安装不需要依赖的生命周期脚本。
 
-三种方式的选择：
+四种方式的选择：
 
 | 方式 | 依赖是否固定 | 更新方式 | 适合 |
 |---|---|---|---|
 | 安装脚本 | 是，使用仓库生成的安装锁 | `pi update` | 大多数个人用户 |
 | npm 全局安装 | 否，只固定直接依赖 | `pi update` 或重装 | 已有 Node 工具链、需要统一管理 |
 | Nix flake | 由 Nix 锁定 | `nix profile upgrade pi` | 使用 Nix 管理开发环境 |
+| 源码 checkout | 是，由 `package-lock.json` 固定 | `git pull` 后重装并重建 | 阅读、修改或调试 Pi |
 
 安装脚本和 npm 安装的 Pi 都可以用 `pi update` 更新；Nix 安装由 Nix 管理，`pi update` 只更新包和模型目录。
 
@@ -86,6 +87,60 @@ pi --version
 ```text
 1.4.0
 ```
+
+### 从源码安装并运行
+
+如果你要阅读、修改或调试 Pi，建议从仓库源码运行，而不是先全局安装。源码方式需要 Git、Node.js 22.19 或更高版本，以及 npm。
+
+```bash
+git clone https://github.com/earendil-works/pi.git
+cd pi
+npm install --ignore-scripts
+npm run build
+```
+
+仓库 README 列出的常用源码命令如下：
+
+| 命令 | 作用 |
+|---|---|
+| `npm install --ignore-scripts` | 安装所有依赖，但不运行生命周期脚本 |
+| `npm run build` | 刷新模型数据，然后构建所有包 |
+| `npm run build:offline` | 使用已有模型数据离线重建 |
+| `npm run check` | 运行 lint、格式化和类型检查 |
+| `./test.sh` | 运行测试；没有 API Key 时跳过依赖真实模型的测试 |
+| `./pi-test.sh` | 从源码运行 Pi；可在任意目录执行 |
+
+从源码启动 Pi：
+
+```bash
+./pi-test.sh --version
+./pi-test.sh
+```
+
+在 Windows PowerShell 中使用：
+
+```powershell
+.\pi-test.ps1 --version
+.\pi-test.ps1
+```
+
+`pi-test.sh` 和 `pi-test.ps1` 会直接运行 `packages/coding-agent/src/cli.ts`，并把参数传给 Pi。它们不会把 `pi` 命令安装到 `PATH`；适合开发验证，不适合当作日常全局命令。需要长期使用时，可改用安装脚本、npm 或 Nix。
+
+更新源码安装：
+
+```bash
+git pull
+npm install --ignore-scripts
+npm run build
+```
+
+如果要生成独立可执行文件，可以使用仓库脚本：
+
+```bash
+./scripts/build-binaries.sh --offline-model-data --platform linux-x64 --out "$PWD/out"
+```
+
+`--platform` 可选 `darwin-arm64`、`darwin-x64`、`linux-x64`、`linux-arm64`、`windows-x64`、`windows-arm64`。GitHub Release 还提供带 `SHA256SUMS` 校验的源码归档；从归档构建时，先解压并进入对应版本目录，再运行同一脚本。
 
 ## 2.3 选择工作目录并启动
 
@@ -270,7 +325,7 @@ Windows 上还有几处差异：
 
 ## 2.9 小结
 
-- Pi 要求 Node.js 22.19 及以上；安装脚本会固定依赖，npm 方式不固定。
+- Pi 要求 Node.js 22.19 及以上；可用安装脚本、npm、Nix 或源码 checkout 安装。源码方式用 `npm install --ignore-scripts`、`npm run build` 和 `./pi-test.sh` 运行。
 - 工作目录决定项目配置、资源发现和会话分组，启动前先 `cd` 到目标项目。
 - 用 `/login` 连接提供商，用 `/model` 选择模型；CI 中可用环境变量代替存储凭据。
 - 第一个任务应范围小、结果可验证；审查改动是使用者的责任。
@@ -284,12 +339,14 @@ Windows 上还有几处差异：
 3. 在一个练习目录中让 Pi 创建 `hello.txt`，内容为当前日期，然后读取并核对。验收：文件存在且内容正确；你能在对话记录中看到 `write` 和 `read` 的工具调用。
 4. 退出后运行 `pi --continue`，继续上一个会话并让它修改 `hello.txt`。验收：修改发生在上一个会话的上下文中，`/session` 显示的会话 ID 未变。
 5. 用 `pi --help` 找到 `--no-session` 并解释它的作用。验收：能说明该次运行不会持久化会话，退出后无法继续。
+6. 克隆 Pi 仓库，从源码安装并运行 `./pi-test.sh --version`。验收：命令输出 Pi 版本；Windows 下可用 `.\pi-test.ps1 --version` 完成同样验证。
 
 ## 延伸阅读
 
 - [官方文档：Quickstart](https://pi.dev/docs/latest/quickstart)
 - [官方文档：Use Pi in the Terminal](https://pi.dev/docs/latest/usage)
 - [官方文档：Windows Setup](https://pi.dev/docs/latest/windows)
+- 源码：仓库根 `README.md` 的 Development 与 Building standalone binaries 章节
 - 源码：`packages/coding-agent/src/cli/args.ts`（命令行参数）、`packages/coding-agent/src/core/auth-storage.ts`、`packages/coding-agent/src/modes/interactive/interactive-mode.ts`
 
 ---
