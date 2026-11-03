@@ -28,7 +28,7 @@ Pi 的配置分两层：
 | `mcp.json` | 所有项目都可用的 MCP 服务器 |
 | `models.json` | 兼容端点、自定义模型、模型覆盖 |
 | `auth.json` | 保存的 API Key 与 OAuth 凭据 |
-| `AGENTS.override.md`、`AGENTS.md`、`AGENTS.MD`、`CLAUDE.md`、`CLAUDE.MD` | 跨工作目录生效的用户指令 |
+| `AGENTS.override.md`、`AGENTS.md`、`CLAUDE.md` | 跨工作目录生效的用户指令 |
 | `SYSTEM.md` | 替换 Pi 的默认系统提示词 |
 | `APPEND_SYSTEM.md` | 在系统提示词后追加指令 |
 | `extensions/` | 用户扩展 |

@@ -118,10 +118,10 @@ Read `references/formats.md` before converting a document. Run scripts relative 
 
 ```mermaid
 flowchart LR
-    A["启动时扫描技能"] --> B["系统提示词写入名称、描述、路径"]
-    B --> C{"模型判断任务匹配?"}
+    A["启动时扫描技能"] --> B["系统提示词写入<br/>名称、描述、路径"]
+    B --> C{"模型判断<br/>任务匹配?"}
     C -->|是| D["读取 SKILL.md"]
-    D --> E["按需读取 references 或运行 scripts"]
+    D --> E["读取 references<br/>按需运行 scripts"]
     C -->|否| F["不加载正文"]
 ```
 
